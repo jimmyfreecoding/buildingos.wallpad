@@ -1,0 +1,155 @@
+<style scoped>
+.logo {
+  width: 15%;
+}
+.mini.logo {
+  width: 115px;
+  height: auto;
+}
+.version {
+  font-size: 12px;
+  color: #000;
+  margin-top: 10px;
+  text-align: right;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+</style>
+<template>
+  <img
+    id="logoImg"
+    @click="opensetup"
+    :class="size"
+    class="logo"
+    src="@/assets/images/logo.png"
+  />
+  <!-- sos弹窗 -->
+  <el-dialog
+    class="soc-dia"
+    v-model="dialogSetup"
+    append-top-body
+    top="280px"
+    width="450"
+    :show-close="false"
+  >
+    <div class="title">系统管理</div>
+    <div class="txt1">输入管理员密码：</div>
+    <div class="txt2">
+      <!-- 密码输入框 -->
+      <van-password-input
+        :value="value"
+        :length="4"
+        :error-info="errorInfo"
+        :focused="showKeyboard"
+        @focus="showKeyboard = true"
+      />
+      <!-- 数字键盘 -->
+      <van-number-keyboard
+        v-model="value"
+        :show="showKeyboard"
+        @blur="showKeyboard = false"
+      />
+    </div>
+    <div class="version">{{ version }}</div>
+    <template #footer>
+      <div class="dialog-footer flex-row justify-center">
+        <el-button type="danger" @click="reload" v-if="passwordFlag === true">
+          刷新
+        </el-button>
+        <el-button type="danger" @click="reset" v-if="passwordFlag === true">
+          绑定
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
+</template>
+<script setup>
+const version = ref("1.0.1");
+const dialogSetup = ref(false);
+const value = ref("");
+const showKeyboard = ref(false);
+const passwordFlag = ref(false);
+const errorInfo = ref("");
+const props = defineProps({
+  size: String,
+});
+const reload = () => {
+  location.reload();
+};
+const reset = () => {
+  localStorage.clear();
+  location.reload();
+};
+const opensetup = () => {
+  dialogSetup.value = true;
+  // location.reload()
+  // var msg = {
+  //   data: {
+  //     action: 'quit'
+  //   }
+  // };
+  // // 向 uni-app 页面发送消息
+  // window.parent.postMessage(JSON.stringify(msg), '*');
+  // console.info(uni)
+  // uni.postMessage({
+  //   data: {
+  //     action: 'quit'
+  //   }
+  // });
+};
+watch(dialogSetup, (newVal) => {
+  value.value = "";
+  passwordFlag.value = false;
+});
+watch(value, (newVal) => {
+  let password = "";
+  let area = "";
+  let data = localStorage.getItem("data");
+  if (data) {
+    let jsondata = JSON.parse(data);
+    console.info(jsondata);
+    password = jsondata.floor.substring(0, jsondata.floor.length - 1);
+    if(password.length==1){
+      password = "0"+password
+    }
+    console.info(password);
+    if (jsondata.type === "wc" || jsondata.type === "wc1") {
+      area = "05";
+    } else if (jsondata.type === "wcw" || jsondata.type === "wcw2") {
+      area = "06";
+    } else {
+      if (jsondata.code === "A") {
+        area = "01";
+      } else if (jsondata.code === "B") {
+        area = "02";
+      } else if (jsondata.code === "C") {
+        area = "03";
+      } else if (jsondata.code === "D") {
+        area = "04";
+      } else {
+        area = "00";
+      }
+    }
+    password = password + area;
+    console.info(
+      "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    );
+    console.info(password);
+    console.info(
+      "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    );
+  } else {
+    password = "0000";
+  }
+  if (newVal.length === 4 && newVal !== password) {
+    errorInfo.value = "密码错误";
+    value.value = "";
+  } else {
+    errorInfo.value = "";
+    if (newVal.length === 4) {
+      passwordFlag.value = true;
+    }
+  }
+});
+</script>
