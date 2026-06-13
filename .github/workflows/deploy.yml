@@ -1,0 +1,39 @@
+name: Build & Publish
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install & Build
+        run: npm install --legacy-peer-deps && npm run build
+
+      - name: Zip dist
+        run: cd dist && zip -r ../wallpad.zip .
+
+      - name: Login CNB
+        run: echo "${{ secrets.CNB_TOKEN }}" | docker login docker.cnb.cool -u ${{ secrets.CNB_USERNAME }} --password-stdin
+
+      - name: Push zip image
+        run: |
+          printf 'FROM scratch\nADD wallpad.zip /\n' > Dockerfile.zip
+          docker build -f Dockerfile.zip \
+            -t docker.cnb.cool/geeqee2025/buildingos.img/wallpad-zip:latest .
+          docker push docker.cnb.cool/geeqee2025/buildingos.img/wallpad-zip:latest
+
+      - name: Trigger buildingos.ai rebuild
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.BUILDINGOS_AI_PAT }}
+          repository: geeqee2025/buildingos.ai
+          event-type: frontend-updated
+          client-payload: '{"source": "wallpad"}'
