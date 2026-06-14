@@ -32,4 +32,4 @@ jobs:
       - name: Trigger buildingos.ai rebuild
         env:
           GH_TOKEN: ${{ secrets.BUILDINGOS_AI_PAT }}
-        run: gh workflow run build-web.yml --repo jimmyfreecoding/buildingos.ai
+        run: gh workflow run build-web.yml --repo jimmyfreecoding/buildingos.ai --ref main
