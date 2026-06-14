@@ -30,9 +30,6 @@ jobs:
           docker push docker.cnb.cool/geeqee2025/buildingos.img/wallpad-zip:latest
 
       - name: Trigger buildingos.ai rebuild
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.BUILDINGOS_AI_PAT }}
-          repository: jimmyfreecoding/buildingos.ai
-          event-type: frontend-updated
-          client-payload: '{"source": "wallpad"}'
+        env:
+          GH_TOKEN: ${{ secrets.BUILDINGOS_AI_PAT }}
+        run: gh workflow run build-web.yml --repo jimmyfreecoding/buildingos.ai
