@@ -1,4 +1,4 @@
-name: Build & Publish
+﻿name: Build & Publish
 on:
   push:
     branches: [main]
@@ -33,6 +33,6 @@ jobs:
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.BUILDINGOS_AI_PAT }}
-          repository: geeqee2025/buildingos.ai
+          repository: jimmyfreecoding/buildingos.ai
           event-type: frontend-updated
           client-payload: '{"source": "wallpad"}'
