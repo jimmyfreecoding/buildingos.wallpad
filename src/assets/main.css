@@ -8,7 +8,7 @@
 }
 @font-face {
   font-family: 'ly-light';  /* 指定字体名称 */
-  src: url('@/assets/fonts/LynkcoType-light.ttf');  /* 指定字体文件的路径和文件名 */
+  src: url('@/assets/fonts/LynkcoType-Light.ttf');  /* 指定字体文件的路径和文件名 */
 }
 @font-face {
   font-family: 'ly-medium';  /* 指定字体名称 */
