@@ -14,6 +14,31 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Create placeholder assets
+        run: |
+          python3 - <<'PYEOF'
+          import os, base64, re, glob
+          PNG = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==')
+          JPG = base64.b64decode('/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAARC AABAAEDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABgUHCP/EAB8QAAIBBAMBAAAAAAAAAAAAAAECAxEEEiExQf/EABQBAQAAAAAAAAAAAAAAAAAAAAD/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCz0A9oCgADiqAAAAAA/9k=')
+          os.makedirs('src/assets/images', exist_ok=True)
+          found = set()
+          for pattern in ['src/**/*.vue', 'src/**/*.js', 'src/**/*.ts', 'src/**/*.scss', 'src/**/*.css']:
+              for f in glob.glob(pattern, recursive=True):
+                  try:
+                      content = open(f, encoding='utf-8', errors='ignore').read()
+                      for m in re.finditer(r'assets/images/([\w\-\.]+\.(?:png|jpg|jpeg|svg|webp))', content):
+                          found.add(m.group(1))
+                  except Exception:
+                      pass
+          for name in found:
+              path = os.path.join('src/assets/images', name)
+              if not os.path.exists(path):
+                  ext = os.path.splitext(name)[1].lower()
+                  data = JPG if ext in ('.jpg', '.jpeg') else PNG
+                  open(path, 'wb').write(data)
+                  print(f'placeholder: {path}')
+          PYEOF
+
       - name: Install & Build
         run: npm install --legacy-peer-deps && npm run build
 
