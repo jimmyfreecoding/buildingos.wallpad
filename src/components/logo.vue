@@ -22,7 +22,7 @@
     @click="opensetup"
     :class="size"
     class="logo"
-    src="@/assets/images/logo.png"
+    src="@/assets/logo.svg"
   />
   <!-- sos弹窗 -->
   <el-dialog
