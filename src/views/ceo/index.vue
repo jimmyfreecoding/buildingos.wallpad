@@ -13,7 +13,7 @@
     </div>
     <div class="header">
       <div class="logo" @click.stop="dialogSetup = true">
-        <img src="@/assets/images/logo.png" alt="" />
+        <img src="@/assets/logo.svg" alt="" />
       </div>
       <LocalTime />
     </div>
